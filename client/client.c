@@ -11,10 +11,22 @@
 #include <string.h>
 #include <sys/socket.h>
 
+/* Packet struct */
+struct packet { int x; int y; };
+/* Check for primes */
+void checkPrime(int x, int y){
+  if (x % y == 0) {
+    puts("Prime number");
+  } else {
+    puts("Not a prime");
+  }
+}
+/* Main */
 int main() {
+  struct packet pk;
   int clientSocket;
   char *ipAddress = "127.0.0.1";
-  int x;
+  int x, y;
   struct sockaddr_in serverAddr;
   socklen_t addr_size;
 
@@ -32,9 +44,11 @@ int main() {
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
 
   /*---- Read the message from the server into the buffer ----*/
-  recv(clientSocket, &(x), sizeof(x), 0);
-
+  recv(clientSocket, &(pk), sizeof(pk), 0);
   /*---- Print the received message ----*/
-  printf("Data received: %d\n", x);
+  printf("Data received: %d\n", pk.x);
+  printf("Data received Sqrt: %d\n", pk.y);
+  checkPrime(pk.x, pk.y);
+
   return 0;
 }

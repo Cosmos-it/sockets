@@ -32,12 +32,6 @@ int main() {
   struct sockaddr_storage serverStorage;
   socklen_t addr_size;
 
-  pk.x = (int)randomGenerator();
-  pk.y = sqrt((int)randomGenerator());
-  /* Test the out puts */
-  printf("Original: %d\n", pk.x);
-  printf("Sqrt of Original: %d\n", pk.y);
-
   welcomeSocket = socket(PF_INET, SOCK_STREAM, 0);
   serverAddr.sin_family = AF_INET;
   /* Set port number*/
@@ -48,18 +42,23 @@ int main() {
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
   /*---- Bind the address struct to the socket ----*/
   bind(welcomeSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
-  /*---- Listen on the socket, with 5 max connection requests queued ----*/
-  if (listen(welcomeSocket, 5) == 0)
-    printf("Listening %s\n", ipAddress);
-  else
+
+
+  while (1) {
+    pk.x = (int)randomGenerator();
+    pk.y = sqrt((int)randomGenerator());
+    /* Test the out puts */
+    printf("Original: %d\n", pk.x);
+    printf("Sqrt of Original: %d\n", pk.y);
+
+    if (listen(welcomeSocket, 200) == 0)
+      printf("Listening %s\n", ipAddress);
+    else
     printf("Error\n");
-
-  /*---- Accept call creates a new socket for the incoming connection ----*/
-  addr_size = sizeof serverStorage;
-  newSocket = accept(welcomeSocket, (struct sockaddr *)&serverStorage, &addr_size);
-
-  /*---- Send message to the socket of the incoming connection ----*/
-  send(newSocket, &(pk.x), sizeof(pk.x), 0);
+    addr_size = sizeof serverStorage;
+    newSocket = accept(welcomeSocket, (struct sockaddr *)&serverStorage, &addr_size);
+    send(newSocket, &(pk), sizeof(pk), 0);
+  }
 
   return 0;
 }
