@@ -13,14 +13,8 @@
 
 /* Packet struct */
 struct packet { int x; int y; };
-/* Check for primes */
-void checkPrime(int x, int y){
-  if (x % y == 0) {
-    puts("Prime number");
-  } else {
-    puts("Not a prime");
-  }
-}
+void checkPrime(int x, int y);
+
 /* Main */
 int main() {
   struct packet pk;
@@ -48,7 +42,19 @@ int main() {
   /*---- Print the received message ----*/
   printf("Data received: %d\n", pk.x);
   printf("Data received Sqrt: %d\n", pk.y);
-  checkPrime(pk.x, pk.y);
+  checkPrime(pk.x, pk.y); //Check for prime numbers
 
   return 0;
+}
+
+/* Check for primes */
+void checkPrime(int x, int y){
+  if (x % y == 0) {
+    printf("%d %s\n", x, ": is a prime number");
+  } else if (x % y == y) {
+    printf("%d %s %d\n", x, ": equals to y: ", y);
+  }
+  else {
+      printf("%d %s\n", x, ": is not a prime");
+  }
 }
