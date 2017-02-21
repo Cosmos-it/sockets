@@ -36,7 +36,6 @@ int main() {
   /* Connect the socket to server*/
   addr_size = sizeof serverAddr;
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
-
   /*---- Read the message from the server into the buffer ----*/
   recv(clientSocket, &(pk), sizeof(pk), 0);
   /*---- Print the received message ----*/
@@ -49,12 +48,13 @@ int main() {
 
 /* Check for primes */
 void checkPrime(int x, int y){
-  if (x % y == 0) {
-    printf("%d %s\n", x, ": is a prime number");
-  } else if (x / y == y) {
-    printf("%d %s %d\n", x, ": equals to y: ", y);
-  }
-  else {
-      printf("%d %s\n", x, ": is not a prime");
-  }
+    /* code */
+    if (x % y == 0) {
+      printf("%d %s\n", x, ": is a prime number");
+    } else if (x / y == y) {
+      printf("%d %s %d\n", x/y, ": equals to y: ", y);
+    }
+    else {
+        printf("%d %s\n", x, ": is not a prime");
+    }
 }
