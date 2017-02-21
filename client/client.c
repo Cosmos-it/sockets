@@ -51,7 +51,7 @@ int main() {
 void checkPrime(int x, int y){
   if (x % y == 0) {
     printf("%d %s\n", x, ": is a prime number");
-  } else if (x % y == y) {
+  } else if (x / y == y) {
     printf("%d %s %d\n", x, ": equals to y: ", y);
   }
   else {
