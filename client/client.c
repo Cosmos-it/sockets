@@ -44,12 +44,9 @@ int main() {
   /* Connect the socket to server*/
   addr_size = sizeof serverAddr;
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
-
-  /*---- Read the message from the server into the buffer ----*/
-  do {
-    pthread_create(&td, NULL, threadFunction, (void *)&clientSocket);
-  } while(1);
-
+  while (1) {
+    threadFunction(&clientSocket);
+  }
   pthread_exit(NULL);
 
   return 0;
@@ -58,11 +55,13 @@ int main() {
 void *threadFunction(void *socket) {
     /*---- Print the received message ----*/
     while (1) {
-      /* code */
+      /*---- Read the message from struct packet ----*/
       recv(clientSocket, &(pk), sizeof(pk), 0);
       printf("Data received: %d\n", pk.x);
       printf("Data received Sqrt: %d\n", pk.y);
       checkPrime(pk.x, pk.y); // Check for prime numbers
+      pthread_create(&td, NULL, threadFunction, (void *)&socket);
+
     }
 }
 

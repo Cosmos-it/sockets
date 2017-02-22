@@ -44,9 +44,11 @@ int main() {
   bind(welcomeSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
 
 
-  while (1) { //Client is allowed to make request to this part many times.
+  while (1) { //Client is allowed to make request to this part many times
     pk.x = (int)randomGenerator(); //Get a huge generated number
     pk.y = sqrt((int)randomGenerator()); //Get sqrt of the generated number
+
+    /* Test the out puts */
     printf("Original: %d\n", pk.x); //Test values for x
     printf("Sqrt of Original: %d\n", pk.y); //Test values for y
 
