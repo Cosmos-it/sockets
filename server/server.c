@@ -44,20 +44,20 @@ int main() {
   bind(welcomeSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
 
 
-  while (1) {
-    pk.x = (int)randomGenerator();
-    pk.y = sqrt((int)randomGenerator());
-    /* Test the out puts */
-    printf("Original: %d\n", pk.x);
-    printf("Sqrt of Original: %d\n", pk.y);
+  while (1) { //Client is allowed to make request to this part many times.
+    pk.x = (int)randomGenerator(); //Get a huge generated number
+    pk.y = sqrt((int)randomGenerator()); //Get sqrt of the generated number
+    printf("Original: %d\n", pk.x); //Test values for x
+    printf("Sqrt of Original: %d\n", pk.y); //Test values for y
 
     if (listen(welcomeSocket, 200) == 0)
-      printf("Listening %s\n", ipAddress);
+      printf("Listening %s\n", ipAddress); //Show the address server is listening at
     else
-    printf("Error\n");
+    printf("Error\n"); //Print error if there is connection issues
+
     addr_size = sizeof serverStorage;
     newSocket = accept(welcomeSocket, (struct sockaddr *)&serverStorage, &addr_size);
-    send(newSocket, &(pk), sizeof(pk), 0);
+    send(newSocket, &(pk), sizeof(pk), 0); // send the packet to the client.
   }
 
   return 0;

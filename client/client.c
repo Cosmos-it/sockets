@@ -6,21 +6,29 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 
 /* Packet struct */
-struct packet { int x; int y; };
+struct packet {
+  int x;
+  int y;
+};
 void checkPrime(int x, int y);
+void *threadFunction(void *i);
+
+// Global variables:
+int clientSocket;
+struct packet pk;
+pthread_t td;
 
 /* Main */
 int main() {
-  struct packet pk;
-  int clientSocket;
   char *ipAddress = "127.0.0.1";
-  int x, y;
+  int x, y, i = 1;
   struct sockaddr_in serverAddr;
   socklen_t addr_size;
 
@@ -36,25 +44,35 @@ int main() {
   /* Connect the socket to server*/
   addr_size = sizeof serverAddr;
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
+
   /*---- Read the message from the server into the buffer ----*/
-  recv(clientSocket, &(pk), sizeof(pk), 0);
-  /*---- Print the received message ----*/
-  printf("Data received: %d\n", pk.x);
-  printf("Data received Sqrt: %d\n", pk.y);
-  checkPrime(pk.x, pk.y); //Check for prime numbers
+  while (i < addr_size) {
+    pthread_create(&td, NULL, threadFunction, (void *)i);
+    i++;
+  }
+
+  pthread_exit(NULL);
 
   return 0;
 }
 
+void *threadFunction(void *id) {
+    /*---- Print the received message ----*/
+    recv(clientSocket, &(pk), sizeof(pk), 0);
+    printf("Data received: %d\n", pk.x);
+    printf("Data received Sqrt: %d\n", pk.y);
+    checkPrime(pk.x, pk.y); // Check for prime numbers
+  return 0;
+}
+
 /* Check for primes */
-void checkPrime(int x, int y){
-    /* code */
-    if (x % y == 0) {
-      printf("%d %s\n", x, ": is a prime number");
-    } else if (x / y == y) {
-      printf("%d %s %d\n", x/y, ": equals to y: ", y);
-    }
-    else {
-        printf("%d %s\n", x, ": is not a prime");
-    }
+void checkPrime(int x, int y) {
+  /* code */
+  if (x % y == 0) {
+    printf("%d %s\n", x, ": is a prime number");
+  } else if (x / y == y) {
+    printf("%d %s %d\n", x / y, ": equals to y: ", y);
+  } else {
+    printf("%d %s\n", x, ": is not a prime");
+  }
 }
