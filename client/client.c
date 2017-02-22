@@ -18,7 +18,7 @@ struct packet {
   int y;
 };
 void checkPrime(int x, int y);
-void *threadFunction(void *i);
+void *threadFunction(void *socket);
 
 // Global variables:
 int clientSocket;
@@ -46,23 +46,24 @@ int main() {
   connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
 
   /*---- Read the message from the server into the buffer ----*/
-  while (i < addr_size) {
-    pthread_create(&td, NULL, threadFunction, (void *)i);
-    i++;
-  }
+  do {
+    pthread_create(&td, NULL, threadFunction, (void *)&clientSocket);
+  } while(1);
 
   pthread_exit(NULL);
 
   return 0;
 }
 
-void *threadFunction(void *id) {
+void *threadFunction(void *socket) {
     /*---- Print the received message ----*/
-    recv(clientSocket, &(pk), sizeof(pk), 0);
-    printf("Data received: %d\n", pk.x);
-    printf("Data received Sqrt: %d\n", pk.y);
-    checkPrime(pk.x, pk.y); // Check for prime numbers
-  return 0;
+    while (1) {
+      /* code */
+      recv(clientSocket, &(pk), sizeof(pk), 0);
+      printf("Data received: %d\n", pk.x);
+      printf("Data received Sqrt: %d\n", pk.y);
+      checkPrime(pk.x, pk.y); // Check for prime numbers
+    }
 }
 
 /* Check for primes */
