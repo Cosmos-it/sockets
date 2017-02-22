@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <stdlib.h>
+#include <netdb.h>
 
 /* Packet struct */
 struct packet {
@@ -43,7 +45,12 @@ int main() {
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
   /* Connect the socket to server*/
   addr_size = sizeof serverAddr;
-  connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
+  if (connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size) < 0)
+  {
+    perror("Can't set remote->sin_addr.s_addr");
+    exit(1);
+  }
+
   while (1) {
     threadFunction(&clientSocket);
   }

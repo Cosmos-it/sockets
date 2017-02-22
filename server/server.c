@@ -31,6 +31,7 @@ int main() {
   struct sockaddr_in serverAddr;
   struct sockaddr_storage serverStorage;
   socklen_t addr_size;
+  const int MAX_CONNECTION = 10;
 
   welcomeSocket = socket(PF_INET, SOCK_STREAM, 0);
   serverAddr.sin_family = AF_INET;
@@ -52,7 +53,7 @@ int main() {
     printf("Original: %d\n", pk.x); //Test values for x
     printf("Sqrt of Original: %d\n", pk.y); //Test values for y
 
-    if (listen(welcomeSocket, 200) == 0)
+    if (listen(welcomeSocket, MAX_CONNECTION) == 0)
       printf("Listening %s\n", ipAddress); //Show the address server is listening at
     else
     printf("Error\n"); //Print error if there is connection issues
