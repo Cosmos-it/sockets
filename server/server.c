@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////
-///  server.c
+/// server.c
 /// LabFour
 /// Created by Taban Cosmos on 2/17/17.
-///  Copyright © 2017 Taban Cosmos. All rights reserved.
+/// Copyright © 2017 Taban Cosmos. All rights reserved.
 //////////////////////////////////////////////////////
 
 #include <arpa/inet.h>
@@ -53,10 +53,11 @@ int main() {
   serverAddr.sin_addr.s_addr = inet_addr(ipAddress); /// Set IP address
   memset(serverAddr.sin_zero, '\0',
          sizeof serverAddr.sin_zero); // set padding bits field to 0
-  bind(welcomeSocket, (struct sockaddr *)&serverAddr,
-       sizeof(serverAddr)); // Bind the address struct to the socket
-       
-////// Client is allowed to make request to this part many times
+
+  ////// Bind the address struct to the socket
+  bind(welcomeSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+
+  ////// Client is allowed to make request to this part many times
   while (running) {
     if (listen(welcomeSocket, MAX_CONNECTION) == 0)
       printf("Listening %s\n",
@@ -78,7 +79,8 @@ int main() {
     printf("Received %d\n",
            rst.result); // print received data for testing purpose
 
-    if (rst.result % 2 == 0) break; // break loop if result is not a prime
+    if (rst.result % 2 == 0)
+      break; // break loop if result is not a prime
   }
 
   return 0;
