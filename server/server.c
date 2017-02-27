@@ -75,6 +75,7 @@ int main() {
     read (newSocket, &(rst), sizeof (rst));
     read (newSocket, &(rst), sizeof(rst));
     printf("Received %d\n", rst.result);
+    if (rst.result % 2 == 0) break;
 
   }
 

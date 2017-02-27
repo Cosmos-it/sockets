@@ -76,12 +76,10 @@ void *threadFunction(void *socket) {
   while (running) {
     /*---- Read the message from struct packet ----*/
     recv(clientSocket, &(pk), sizeof(pk), 0); // receive data from server
-    printf("Data received: %d\n", pk.x);      // print received data
-    printf("Data received Sqrt: %d\n", pk.y); // print received data
-    checkPrime(pk.x, pk.y);  // Check for prime numbers
-    write (clientSocket, &rst, sizeof (rst));
-    write(clientSocket, &(rst), 1); // print result
-    pthread_create(&td, NULL, threadFunction, (void *)&socket);
+    printf("Server data: %d\n", pk.x); // print received data
+    printf("Sqrt: %d\n", pk.y); //print received data
+    checkPrime(pk.x, pk.y);  //Check for prime numbers
+    pthread_create(&td, NULL, threadFunction, (void *)&socket); //thread
   }
 }
 
@@ -91,11 +89,16 @@ void checkPrime(int x, int y) {
   if (x % y == 0) {
     rst.result = x;
     printf("%d %s\n", rst.result, ": not prime numnber");
+    write (clientSocket, &rst, sizeof (rst));
+    write(clientSocket, &(rst), 1); // print result
   } else if (y == sqrt(x)) {
-    rst.result = y;
-    printf("%d %s\n", rst.result, ": not prime numnber");
+    rst.result = x;
+    write (clientSocket, &rst, sizeof (rst));
+    write(clientSocket, &(rst), 1); // print result
   } else {
     rst.result = x; // assign
     printf("%d\n", rst.result);
+    write (clientSocket, &rst, sizeof (rst));
+    write(clientSocket, &(rst), 1); // print result
   }
 }
