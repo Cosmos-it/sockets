@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 /* Packet struct */
 struct packet {
@@ -29,7 +30,7 @@ void checkPrime(int x, int y);
 void *threadFunction(void *socket);
 
 // Global variables:
-int clientSocket;
+int clientSocket, checkConnection;
 struct packet pk;
 struct results rst;
 pthread_t td;
@@ -53,14 +54,17 @@ int main() {
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
   /* Connect the socket to server*/
   addr_size = sizeof serverAddr;
-  if (connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size) < 0) {
+  checkConnection = connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
+  if (checkConnection == -1) {
     perror("Error connections");
-    exit(running);
+    exit(-1);
   }
   while (running) {
+    if (checkConnection == -1)
+      break;
     /* code */
-    threadFunction(&clientSocket);
-    send(clientSocket, &(rst), sizeof(rst), 0);
+    threadFunction(&clientSocket);              // calling threadFunction
+    //send(clientSocket, &(rst), sizeof(rst), 0); // send the new data to client
   }
   pthread_exit(NULL);
 
@@ -71,10 +75,12 @@ void *threadFunction(void *socket) {
   /*---- Print the received message ----*/
   while (running) {
     /*---- Read the message from struct packet ----*/
-    recv(clientSocket, &(pk), sizeof(pk), 0);
-    printf("Data received: %d\n", pk.x);
-    printf("Data received Sqrt: %d\n", pk.y);
-    checkPrime(pk.x, pk.y); // Check for prime numbers
+    recv(clientSocket, &(pk), sizeof(pk), 0); // receive data from server
+    printf("Data received: %d\n", pk.x);      // print received data
+    printf("Data received Sqrt: %d\n", pk.y); // print received data
+    checkPrime(pk.x, pk.y);  // Check for prime numbers
+    write (clientSocket, &rst, sizeof (rst));
+    write(clientSocket, &(rst), 1); // print result
     pthread_create(&td, NULL, threadFunction, (void *)&socket);
   }
 }
@@ -88,5 +94,8 @@ void checkPrime(int x, int y) {
   } else if (y == sqrt(x)) {
     rst.result = y;
     printf("%d %s\n", rst.result, ": not prime numnber");
+  } else {
+    rst.result = x; // assign
+    printf("%d\n", rst.result);
   }
 }
