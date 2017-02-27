@@ -16,27 +16,28 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-/* Packet struct */
+/*--------------- packets ---------------*/
 struct packet {
   int x;
   int y;
 };
-
+/*--------------- results ---------------*/
 struct results {
   int result;
 };
 
-void checkPrime(int x, int y);
-void *threadFunction(void *socket);
+/*-------------- defined functions ----------------*/
+void checkPrime(int x, int y); //checkPrime
+void *threadFunction(void *socket); //threadFunction
 
-// Global variables:
-int clientSocket, checkConnection;
+/*------------------------------*/
+int clientSocket, checkConnection; //global  variables
 struct packet pk;
 struct results rst;
 pthread_t td;
 const int running = 1;
 
-/* Main */
+/*-------------- Main client function ----------------*/
 int main() {
   struct sockaddr_in serverAddr;
   char *ipAddress = "127.0.0.1";
@@ -46,15 +47,12 @@ int main() {
   /*---- Create the socket. The three arguments are: ----*/
   clientSocket = socket(PF_INET, SOCK_STREAM, 0);
   serverAddr.sin_family = AF_INET;
-  /* Set port number*/
-  serverAddr.sin_port = htons(7891);
-  /* Set IP address*/
-  serverAddr.sin_addr.s_addr = inet_addr(ipAddress);
-  /* set padding bits field to 0 */
-  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
-  /* Connect the socket to server*/
-  addr_size = sizeof serverAddr;
-  checkConnection = connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
+  serverAddr.sin_port = htons(7893);  /* Set port number*/
+  serverAddr.sin_addr.s_addr = inet_addr(ipAddress);  /* Set IP address*/
+  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  /* set padding bits field to 0 */
+  addr_size = sizeof serverAddr;  /* Connect the socket to server*/
+  checkConnection =
+      connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
   if (checkConnection == -1) {
     perror("Error connections");
     exit(-1);
@@ -62,43 +60,37 @@ int main() {
   while (running) {
     if (checkConnection == -1)
       break;
-    /* code */
-    threadFunction(&clientSocket);              // calling threadFunction
-    //send(clientSocket, &(rst), sizeof(rst), 0); // send the new data to client
+    threadFunction(&clientSocket); // calling threadFunction
   }
-  pthread_exit(NULL);
 
+  pthread_exit(NULL);
   return 0;
 }
 
+/*--------------- thread function ---------------*/
 void *threadFunction(void *socket) {
-  /*---- Print the received message ----*/
   while (running) {
-    /*---- Read the message from struct packet ----*/
     recv(clientSocket, &(pk), sizeof(pk), 0); // receive data from server
-    printf("Server data: %d\n", pk.x); // print received data
-    printf("Sqrt: %d\n", pk.y); //print received data
-    checkPrime(pk.x, pk.y);  //Check for prime numbers
-    pthread_create(&td, NULL, threadFunction, (void *)&socket); //thread
+    printf("Server data: %d\n", pk.x);        // print received data
+    printf("Sqrt: %d\n", pk.y);               // print received data
+    checkPrime(pk.x, pk.y);                   // Check for prime numbers
+    pthread_create(&td, NULL, threadFunction, (void *)&socket); // thread
   }
 }
 
-/* Check for primes */
+/*---------------- check primes and send data  --------------*/
 void checkPrime(int x, int y) {
-  /* code */
   if (x % y == 0) {
     rst.result = x;
-    printf("%d %s\n", rst.result, ": not prime numnber");
-    write (clientSocket, &rst, sizeof (rst));
-    write(clientSocket, &(rst), 1); // print result
+    write(clientSocket, &rst, sizeof(rst));
+    write(clientSocket, &(rst), 1);
   } else if (y == sqrt(x)) {
     rst.result = x;
-    write (clientSocket, &rst, sizeof (rst));
-    write(clientSocket, &(rst), 1); // print result
+    write(clientSocket, &rst, sizeof(rst));
+    write(clientSocket, &(rst), 1);
   } else {
     rst.result = x; // assign
-    printf("%d\n", rst.result);
-    write (clientSocket, &rst, sizeof (rst));
-    write(clientSocket, &(rst), 1); // print result
+    write(clientSocket, &rst, sizeof(rst));
+    write(clientSocket, &(rst), 1);
   }
 }
