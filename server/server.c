@@ -1,8 +1,9 @@
-/****************** SERVER CODE ****************/
-//  server.c
-//  LabFour
-//  Created by Taban Cosmos on 2/17/17.
-//  Copyright © 2017 Taban Cosmos. All rights reserved.
+////////////////////////////////////////////////////////
+///  server.c
+/// LabFour
+/// Created by Taban Cosmos on 2/17/17.
+///  Copyright © 2017 Taban Cosmos. All rights reserved.
+//////////////////////////////////////////////////////
 
 #include <arpa/inet.h>
 #include <math.h>
@@ -15,24 +16,24 @@
 #include <time.h>
 #include <unistd.h>
 
-/*-----------function declaration -----------*/
+//////////////// function declaration ////////////////
 long randomGenerator();
-/*-------------- packet ----------------*/
+/////////////// Packet ////////////////////
 struct packet {
   int x;
   int y;
 };
-/*-------------- resut ----------------*/
+/////////////// Resut //////////////////
 struct results {
   int result;
 };
-/*------------- Random generator -----------*/
+/////////// Random generator ////////////
 long randomGenerator() {
   time_t t;
   srand((unsigned)time(&t));
   return rand() % 800 + 777;
 }
-/*------------ main server function -----------*/
+//////////////// Main server function /////////////
 int main() {
   struct packet pk;   // initialize packet
   struct results rst; // initialize result
@@ -44,17 +45,19 @@ int main() {
   int MAX_CONNECTION = 5; // max connection
   int running = 1;        // continues loop const
 
-  /*-------------- Create the socket. The three arguments are: ----------*/
+  ////////////////////////////////////////////////////////
+  //// Create the socket. The three arguments are: //////
   welcomeSocket = socket(PF_INET, SOCK_STREAM, 0);
   serverAddr.sin_family = AF_INET;
-  serverAddr.sin_port = htons(7893);                 /* Set port number*/
-  serverAddr.sin_addr.s_addr = inet_addr(ipAddress); // Set IP address
+  serverAddr.sin_port = htons(7893);                 /// Set port number
+  serverAddr.sin_addr.s_addr = inet_addr(ipAddress); /// Set IP address
   memset(serverAddr.sin_zero, '\0',
          sizeof serverAddr.sin_zero); // set padding bits field to 0
   bind(welcomeSocket, (struct sockaddr *)&serverAddr,
        sizeof(serverAddr)); // Bind the address struct to the socket
-
-  while (running) { // Client is allowed to make request to this part many times
+       
+////// Client is allowed to make request to this part many times
+  while (running) {
     if (listen(welcomeSocket, MAX_CONNECTION) == 0)
       printf("Listening %s\n",
              ipAddress); // Show the address server is listening at
