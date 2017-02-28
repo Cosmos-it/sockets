@@ -15,9 +15,11 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include <limits.h>
 
 //////////////// function declaration ////////////////
 long randomGenerator();
+
 /////////////// Packet ////////////////////
 struct packet {
   int x;
@@ -31,7 +33,7 @@ struct results {
 long randomGenerator() {
   time_t t;
   srand((unsigned)time(&t));
-  return rand() % 800 + 777;
+  return rand() % INT_MAX + 1;
 }
 //////////////// Main server function /////////////
 int main() {
@@ -56,31 +58,33 @@ int main() {
 
   ////// Bind the address struct to the socket
   bind(welcomeSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+  if (listen(welcomeSocket, MAX_CONNECTION) == 0)
+    printf("Listening %s\n", ipAddress); // Show the address server is listening at
+  else
+    printf("Error\n"); // Print error if there is connection issues
 
   ////// Client is allowed to make request to this part many times
   while (running) {
-    if (listen(welcomeSocket, MAX_CONNECTION) == 0)
-      printf("Listening %s\n",
-             ipAddress); // Show the address server is listening at
-    else
-      printf("Error\n"); // Print error if there is connection issues
-
     addr_size = sizeof serverStorage;
-    newSocket =
-        accept(welcomeSocket, (struct sockaddr *)&serverStorage, &addr_size);
+    newSocket = accept(welcomeSocket, (struct sockaddr *)&serverStorage, &addr_size);
+    pk.x = (int)randomGenerator(); // Get a huge generated number
+    // Get sqrt of the generated number
+    int i = 2;
+    while(i < sqrt(pk.x)) {
+        pk.y  = i;
+        printf("x: %d\n", pk.x);         // Tests the out puts
+        printf("y: %d\n", pk.y); // Tests the out puts
+        send(newSocket, &(pk), sizeof(pk), 0);  // send the packet to the client.
+        i++;
+    }
 
-    pk.x = (int)randomGenerator();          // Get a huge generated number
-    pk.y = sqrt((int)randomGenerator());    // Get sqrt of the generated number
-    printf("Original: %d\n", pk.x);         // Tests the out puts
-    printf("Sqrt of Original: %d\n", pk.y); // Tests the out puts
-    send(newSocket, &(pk), sizeof(pk), 0);  // send the packet to the client.
     read(newSocket, &(rst), sizeof(rst));   // read from client
     read(newSocket, &(rst), sizeof(rst));   // read from client
-    printf("Received %d\n",
-           rst.result); // print received data for testing purpose
+    printf("Y: %d\n",rst.result); // print received data for testing purpose
 
     if (rst.result % 2 == 0)
       break; // break loop if result is not a prime
+
   }
 
   return 0;
