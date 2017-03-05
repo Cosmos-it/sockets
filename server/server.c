@@ -73,19 +73,24 @@ int main() {
     while(i < sqrt(pk.x)) {
         pk.y  = i;
         printf("sending data.. \n");
+        printf("Y : %d\n", i);
+        printf("X : %d\n", pk.x);
         send(newSocket, &(pk), sizeof(pk), 0);  // send the packet to the client.
         i++;
+
+        read(newSocket, &(rst), sizeof(rst));   // read from client
+        //read(newSocket, &(rst), sizeof(rst));   // read from client
+        printf("receiving data from client: \n");
+        printf("Y: %d\n",rst.result); // print received data for testing purpose
+
+        if (rst.result % i == 0) {
+          break; // break loop if result is not a prime
+          printf("program stopped! \n");
+          exit(1);
+        }
     }
 
-    read(newSocket, &(rst), sizeof(rst));   // read from client
-    read(newSocket, &(rst), sizeof(rst));   // read from client
-    printf("receiving data from client: \n");
-    printf("Y: %d\n",rst.result); // print received data for testing purpose
 
-    if (rst.result % 2 == 0) {
-      printf("program stopped! \n");
-      break; // break loop if result is not a prime
-    }
 
   }
 

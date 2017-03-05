@@ -72,13 +72,13 @@ void *threadFunction(void *socket) {
     int rec =
         recv(clientSocket, &(pk), sizeof(pk), 0); // receive data from server
     if (rec > 0) {
-      printf("receiving data...\n");
-      printf("x: %d\n", pk.x); // print received data
-      printf("y: %d\n", pk.y); // print received data
+      // printf("receiving data...\n");
+      // printf("x: %d\n", pk.x); // print received data
+      // printf("y: %d\n", pk.y); // print received data
       checkPrime(pk.x, pk.y);  // Check for prime numbers
       pthread_create(&td, NULL, threadFunction, (void *)&socket); // thread
     } else {
-      perror("error ");
+      perror("Connect closed...");
       exit(1);
     }
   }
@@ -86,17 +86,14 @@ void *threadFunction(void *socket) {
 
 //////////////// check primes and send data  ////////////////
 void checkPrime(int x, int y) {
+
   if (x % y == 0) {
     rst.result = x;
     write(clientSocket, &rst, sizeof(rst));
     write(clientSocket, &(rst), 1);
-    printf("send data to server\n");
-  }
-
-  if (y == sqrt(x)) {
+  } else  {
     rst.result = y; // assign
     write(clientSocket, &rst, sizeof(rst));
     write(clientSocket, &(rst), 1);
-    printf("send data to server\n");
   }
 }
