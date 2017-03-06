@@ -56,44 +56,43 @@ int main() {
   addr_size = sizeof serverAddr;      /// Connect the socket to server
   checkConnection =
       connect(clientSocket, (struct sockaddr *)&serverAddr, addr_size);
-
   while (running) {
     if (checkConnection == 1)
       break;
     threadFunction(&clientSocket); //// calling threadFunction
   }
   pthread_exit(NULL);
+  close(clientSocket);
   return 0;
 }
 
 ///////////// Thread function /////////////////
 void *threadFunction(void *socket) {
+  int soc = (int)socket;
   while (running) {
     int rec =
         recv(clientSocket, &(pk), sizeof(pk), 0); // receive data from server
     if (rec > 0) {
-      // printf("receiving data...\n");
-      // printf("x: %d\n", pk.x); // print received data
-      // printf("y: %d\n", pk.y); // print received data
+      printf("Receiving data...\n");
+      printf("x %d\n", pk.x);
+      printf("y %d\n", pk.y);
       checkPrime(pk.x, pk.y);  // Check for prime numbers
       pthread_create(&td, NULL, threadFunction, (void *)&socket); // thread
     } else {
-      perror("Connect closed...");
+      printf("Connect closed...");
       exit(1);
     }
   }
+  close(soc);
 }
 
 //////////////// check primes and send data  ////////////////
 void checkPrime(int x, int y) {
-
   if (x % y == 0) {
+    rst.result = x ;
+    write(clientSocket, &rst, sizeof(rst));
+  } else {
     rst.result = x;
     write(clientSocket, &rst, sizeof(rst));
-    write(clientSocket, &(rst), 1);
-  } else  {
-    rst.result = y; // assign
-    write(clientSocket, &rst, sizeof(rst));
-    write(clientSocket, &(rst), 1);
   }
 }
